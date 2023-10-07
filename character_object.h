@@ -16,8 +16,9 @@ public:
 	int CurrentFrame;
 	float FrameDuration;
 	float FrameTimer;
+	glm::vec3 Transform;
 
-	CharacterObject(glm::vec2 position, std::vector<Texture2D> idleAnimation, std::vector<Texture2D> walkAnimation, float frameDuration);
+	CharacterObject(glm::vec2 position, std::vector<Texture2D> idleAnimation, std::vector<Texture2D> walkAnimation, float frameDuration, glm::vec3 transform = glm::vec3(1.0f));
 
 	void Update(float dt);
 	void Idle(SpriteRenderer& renderer);

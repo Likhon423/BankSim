@@ -1,13 +1,5 @@
 #include <iostream>
-#include <sstream>
 #include <vector>
-#include <ctime>
-#include <cstdlib>
-
-#include <irrklang/irrKlang.h>
-using namespace irrklang;
-
-#pragma comment(lib, "irrKlang.lib")
 
 #include "sim.h"
 #include "resource_manager.h"
@@ -17,11 +9,19 @@ using namespace irrklang;
 
 SpriteRenderer* Renderer;
 TextRenderer* Text;
+
 std::vector<Texture2D> charOneIdle;
 std::vector<Texture2D> charOneWalk;
 std::vector<Texture2D> charTwoIdle;
 std::vector<Texture2D> charTwoWalk;
+std::vector<Texture2D> charThreeIdle;
+std::vector<Texture2D> charThreeWalk;
+std::vector<Texture2D> charFourIdle;
+std::vector<Texture2D> charFourWalk;
+
 CharacterObject* bankerOne;
+CharacterObject* bankerTwo;
+CharacterObject* bankerThree;
 
 float randomFloat(float min, float max) {
     return min + static_cast<float>(rand()) / static_cast<float>(RAND_MAX / (max - min));
@@ -37,6 +37,8 @@ Sim::~Sim()
 {
     delete Renderer;
     delete bankerOne;
+    delete bankerTwo;
+    delete bankerThree;
     delete Text;
 }
 
@@ -59,6 +61,7 @@ void Sim::Init()
     ResourceManager::LoadTexture("textures/bg-cube.jpg", false, "background");
     ResourceManager::LoadTexture("textures/banker1.png", true, "banker");
     ResourceManager::LoadTexture("textures/table.png", true, "table");
+    ResourceManager::LoadTexture("textures/pc.png", true, "computer");
 
     // load characters
         // char one
@@ -123,13 +126,79 @@ void Sim::Init()
     charTwoWalk.push_back(ResourceManager::GetTexture("charTwoWalk5"));
     charTwoWalk.push_back(ResourceManager::GetTexture("charTwoWalk6"));
     charTwoWalk.push_back(ResourceManager::GetTexture("charTwoWalk7"));
+        // char three
+            // idle
+    ResourceManager::LoadTexture("textures/char3/idle_0.png", true, "charThreeIdle0");
+    ResourceManager::LoadTexture("textures/char3/idle_1.png", true, "charThreeIdle1");
+    ResourceManager::LoadTexture("textures/char3/idle_2.png", true, "charThreeIdle2");
+    ResourceManager::LoadTexture("textures/char3/idle_3.png", true, "charThreeIdle3");
+    ResourceManager::LoadTexture("textures/char3/idle_4.png", true, "charThreeIdle4");
+    ResourceManager::LoadTexture("textures/char3/idle_5.png", true, "charThreeIdle5");
+    charThreeIdle.push_back(ResourceManager::GetTexture("charThreeIdle0"));
+    charThreeIdle.push_back(ResourceManager::GetTexture("charThreeIdle1"));
+    charThreeIdle.push_back(ResourceManager::GetTexture("charThreeIdle2"));
+    charThreeIdle.push_back(ResourceManager::GetTexture("charThreeIdle3"));
+    charThreeIdle.push_back(ResourceManager::GetTexture("charThreeIdle4"));
+    charThreeIdle.push_back(ResourceManager::GetTexture("charThreeIdle5"));
+            // walk
+    ResourceManager::LoadTexture("textures/char3/walk_0.png", true, "charThreeWalk0");
+    ResourceManager::LoadTexture("textures/char3/walk_1.png", true, "charThreeWalk1");
+    ResourceManager::LoadTexture("textures/char3/walk_2.png", true, "charThreeWalk2");
+    ResourceManager::LoadTexture("textures/char3/walk_3.png", true, "charThreeWalk3");
+    ResourceManager::LoadTexture("textures/char3/walk_4.png", true, "charThreeWalk4");
+    ResourceManager::LoadTexture("textures/char3/walk_5.png", true, "charThreeWalk5");
+    ResourceManager::LoadTexture("textures/char3/walk_6.png", true, "charThreeWalk6");
+    ResourceManager::LoadTexture("textures/char3/walk_7.png", true, "charThreeWalk7");
+    charThreeWalk.push_back(ResourceManager::GetTexture("charThreeWalk0"));
+    charThreeWalk.push_back(ResourceManager::GetTexture("charThreeWalk1"));
+    charThreeWalk.push_back(ResourceManager::GetTexture("charThreeWalk2"));
+    charThreeWalk.push_back(ResourceManager::GetTexture("charThreeWalk3"));
+    charThreeWalk.push_back(ResourceManager::GetTexture("charThreeWalk4"));
+    charThreeWalk.push_back(ResourceManager::GetTexture("charThreeWalk5"));
+    charThreeWalk.push_back(ResourceManager::GetTexture("charThreeWalk6"));
+    charThreeWalk.push_back(ResourceManager::GetTexture("charThreeWalk7"));    
+        // char four
+            // idle
+    ResourceManager::LoadTexture("textures/char4/idle_0.png", true, "charFourIdle0");
+    ResourceManager::LoadTexture("textures/char4/idle_1.png", true, "charFourIdle1");
+    ResourceManager::LoadTexture("textures/char4/idle_2.png", true, "charFourIdle2");
+    ResourceManager::LoadTexture("textures/char4/idle_3.png", true, "charFourIdle3");
+    ResourceManager::LoadTexture("textures/char4/idle_4.png", true, "charFourIdle4");
+    ResourceManager::LoadTexture("textures/char4/idle_5.png", true, "charFourIdle5");
+    charFourIdle.push_back(ResourceManager::GetTexture("charFourIdle0"));
+    charFourIdle.push_back(ResourceManager::GetTexture("charFourIdle1"));
+    charFourIdle.push_back(ResourceManager::GetTexture("charFourIdle2"));
+    charFourIdle.push_back(ResourceManager::GetTexture("charFourIdle3"));
+    charFourIdle.push_back(ResourceManager::GetTexture("charFourIdle4"));
+    charFourIdle.push_back(ResourceManager::GetTexture("charFourIdle5"));
+            // walk
+    ResourceManager::LoadTexture("textures/char4/walk_0.png", true, "charFourWalk0");
+    ResourceManager::LoadTexture("textures/char4/walk_1.png", true, "charFourWalk1");
+    ResourceManager::LoadTexture("textures/char4/walk_2.png", true, "charFourWalk2");
+    ResourceManager::LoadTexture("textures/char4/walk_3.png", true, "charFourWalk3");
+    ResourceManager::LoadTexture("textures/char4/walk_4.png", true, "charFourWalk4");
+    ResourceManager::LoadTexture("textures/char4/walk_5.png", true, "charFourWalk5");
+    ResourceManager::LoadTexture("textures/char4/walk_6.png", true, "charFourWalk6");
+    ResourceManager::LoadTexture("textures/char4/walk_7.png", true, "charFourWalk7");
+    charFourWalk.push_back(ResourceManager::GetTexture("charFourWalk0"));
+    charFourWalk.push_back(ResourceManager::GetTexture("charFourWalk1"));
+    charFourWalk.push_back(ResourceManager::GetTexture("charFourWalk2"));
+    charFourWalk.push_back(ResourceManager::GetTexture("charFourWalk3"));
+    charFourWalk.push_back(ResourceManager::GetTexture("charFourWalk4"));
+    charFourWalk.push_back(ResourceManager::GetTexture("charFourWalk5"));
+    charFourWalk.push_back(ResourceManager::GetTexture("charFourWalk6"));
+    charFourWalk.push_back(ResourceManager::GetTexture("charFourWalk7"));
 
-    bankerOne = new CharacterObject(glm::vec2(this->Width - 250.0f, this->Height / 6), charOneIdle, charOneWalk, 0.07f);
+    bankerOne = new CharacterObject(glm::vec2(this->Width + 50.0f, this->Height / 6), charOneIdle, charOneWalk, 0.07f, glm::vec3(-1.0f, 1.0f, 1.0f));
+    bankerTwo = new CharacterObject(glm::vec2(this->Width + 50.0f, this->Height / 2.8), charTwoIdle, charTwoWalk, 0.07f, glm::vec3(-1.0f, 1.0f, 1.0f));
+    bankerThree = new CharacterObject(glm::vec2(this->Width + 50.0f, this->Height / 1.8), charFourIdle, charFourWalk, 0.07f, glm::vec3(-1.0f, 1.0f, 1.0f));
 }
 
 void Sim::Update(float dt)
 {
     bankerOne->Update(dt);
+    bankerTwo->Update(dt);
+    bankerThree->Update(dt);
 }
 
 void Sim::ProcessInput(GLFWwindow *window, float dt)
@@ -140,8 +209,21 @@ void Sim::ProcessInput(GLFWwindow *window, float dt)
 void Sim::Render()
 {
     Texture2D backgroundTex = ResourceManager::GetTexture("background");
-    Renderer->DrawSprite(backgroundTex, glm::vec2(0.0f, 0.0f), glm::vec2(this->Width, this->Height), 0.0f);
     Texture2D tableTex = ResourceManager::GetTexture("table");
-    Renderer->DrawSprite(tableTex, glm::vec2(this->Width - 250.0f, this->Height / 8 * 3), glm::vec2(100.0f, 100.0f), 0.0f);
+    Texture2D computerTex = ResourceManager::GetTexture("computer");
+
+    Renderer->DrawSprite(backgroundTex, glm::vec2(0.0f, 0.0f), glm::vec2(this->Width, this->Height), 0.0f);
+
+    // banker one
+    Renderer->DrawSprite(tableTex, glm::vec2(this->Width - 230.0f, this->Height / 8 * 3 + 25.0f), glm::vec2(75.0f, 75.0f), 0.0f, glm::vec3(0.0f, 0.5f, 1.0f));
+    Renderer->DrawSprite(computerTex, glm::vec2(this->Width - 163.0f, this->Height / 8 * 3 - 5.0f), glm::vec2(62.0f, 71.0f), 0.0f, glm::vec3(0.0f, 0.5f, 1.0f), glm::vec3(-1.0f, 1.0f, 1.0f));
     bankerOne->Idle(*Renderer);
+    // banker two
+    Renderer->DrawSprite(tableTex, glm::vec2(this->Width - 230.0f, this->Height / 5.3 * 3 + 25.0f), glm::vec2(75.0f, 75.0f), 0.0f, glm::vec3(1.0f, -1.0f, 1.0f));
+    Renderer->DrawSprite(computerTex, glm::vec2(this->Width - 163.0f, this->Height / 5.3 * 3 - 5.0f), glm::vec2(62.0f, 71.0f), 0.0f, glm::vec3(1.0f, -1.0f, 1.0f), glm::vec3(-1.0f, 1.0f, 1.0f));
+    bankerTwo->Idle(*Renderer);
+    // banker three
+    Renderer->DrawSprite(tableTex, glm::vec2(this->Width - 230.0f, this->Height / 3.95 * 3 + 25.0f), glm::vec2(75.0f, 75.0f), 0.0f, glm::vec3(0.7f, 0.0f, 0.0f));
+    Renderer->DrawSprite(computerTex, glm::vec2(this->Width - 163.0f, this->Height / 3.95 * 3 - 5.0f), glm::vec2(62.0f, 71.0f), 0.0f, glm::vec3(0.7f, 0.0f, 0.0f), glm::vec3(-1.0f, 1.0f, 1.0f));
+    bankerThree->Idle(*Renderer);
 }

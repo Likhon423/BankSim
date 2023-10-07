@@ -1,7 +1,7 @@
 #include "character_object.h"
 
-CharacterObject::CharacterObject(glm::vec2 position, std::vector<Texture2D> idleTextures, std::vector<Texture2D> walkTextures, float frameDuration)
-	: Position(position), IdleAnimation(idleTextures), WalkAnimation(walkTextures), CurrentFrame(0), FrameDuration(frameDuration), FrameTimer(0.0f) {}
+CharacterObject::CharacterObject(glm::vec2 position, std::vector<Texture2D> idleTextures, std::vector<Texture2D> walkTextures, float frameDuration, glm::vec3 transform)
+	: Position(position), IdleAnimation(idleTextures), WalkAnimation(walkTextures), CurrentFrame(0), FrameDuration(frameDuration), Transform(transform), FrameTimer(0.0f) {}
 
 void CharacterObject::Update(float dt) {
 	FrameTimer += dt;
@@ -17,7 +17,7 @@ void CharacterObject::Idle(SpriteRenderer& renderer)
 		CurrentFrame = 0;
 	}
 
-	renderer.DrawSprite(this->IdleAnimation[CurrentFrame], this->Position, glm::vec2(300.0f, 300.0f), this->Rotation);
+	renderer.DrawSprite(this->IdleAnimation[CurrentFrame], this->Position, glm::vec2(300.0f, 300.0f), this->Rotation, this->Color, this->Transform);
 }
 
 void CharacterObject::Walk(SpriteRenderer& renderer)
@@ -25,5 +25,5 @@ void CharacterObject::Walk(SpriteRenderer& renderer)
 	if (CurrentFrame >= 8) {
 		CurrentFrame = 0;
 	}
-	renderer.DrawSprite(this->WalkAnimation[CurrentFrame], this->Position, glm::vec2(300.0f, 300.0f), this->Rotation);
+	renderer.DrawSprite(this->WalkAnimation[CurrentFrame], this->Position, glm::vec2(300.0f, 300.0f), this->Rotation, this->Color, this->Transform);
 }
